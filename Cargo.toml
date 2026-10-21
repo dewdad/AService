@@ -1,0 +1,30 @@
+[package]
+name = "aservice"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+description = "A native dashboard for background applications and startup jobs"
+license = "MIT"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+ctrlc = { version = "3", features = ["termination"] }
+directories = "6"
+eframe = { version = "0.37", default-features = false, features = ["default_fonts", "glow", "wayland", "x11", "clipboard", "accesskit"] }
+fs2 = "0.4"
+libc = "0.2"
+plist = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.37"
+tempfile = "3"
+uuid = { version = "1", features = ["v4"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_JobObjects", "Win32_System_Threading", "Win32_System_Diagnostics_ToolHelp", "Win32_Security"] }
+
+[profile.release]
+opt-level = 2
+lto = false
+strip = true

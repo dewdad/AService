@@ -1,0 +1,28 @@
+name: Native builds
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libx11-dev libxkbcommon-dev libwayland-dev libgl1-mesa-dev
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets -- -D warnings
+      - run: cargo test --locked
+      - run: cargo build --release --locked
+      - run: python scripts/package.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aservice-${{ runner.os }}-${{ runner.arch }}
+          path: |
+            artifacts/packages/*
