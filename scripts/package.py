@@ -28,22 +28,29 @@ with tempfile.TemporaryDirectory(prefix=name + '-', dir=out) as tmp:
     shutil.copy2(root / 'README.md', staging)
     shutil.copy2(root / 'LICENSE', staging)
     shutil.copy2(root / 'assets' / 'aservice.svg', staging)
+    shutil.copy2(root / 'assets' / 'aservice.png', staging)
     if system == 'Darwin':
         contents = staging / 'AService.app' / 'Contents'
         exe = contents / 'MacOS' / 'aservice'
         exe.parent.mkdir(parents=True)
         shutil.copy2(binary, exe)
         exe.chmod(0o755)
+        resources = contents / 'Resources'
+        resources.mkdir()
+        shutil.copy2(root / 'assets' / 'aservice.icns', resources)
         with (contents / 'Info.plist').open('wb') as f:
             plistlib.dump({'CFBundleName': 'AService', 'CFBundleDisplayName': 'AService',
                           'CFBundleExecutable': 'aservice', 'CFBundleIdentifier': 'dev.aservice.desktop',
                           'CFBundleVersion': '0.1.0', 'CFBundleShortVersionString': '0.1.0',
-                          'CFBundlePackageType': 'APPL', 'NSHighResolutionCapable': True,
+                          'CFBundlePackageType': 'APPL', 'CFBundleIconFile': 'aservice.icns',
+                          'NSHighResolutionCapable': True,
                           'LSMinimumSystemVersion': '11.0'}, f)
     else:
         exe = staging / binary.name
         shutil.copy2(binary, exe)
-        if system != 'Windows':
+        if system == 'Windows':
+            shutil.copy2(root / 'assets' / 'aservice.ico', staging)
+        else:
             exe.chmod(0o755)
             (staging / 'aservice.desktop').write_text('[Desktop Entry]\nType=Application\nName=AService\nComment=Manage background applications\nExec=aservice\nIcon=aservice\nTerminal=false\nCategories=System;Utility;\n', encoding='utf-8')
     if system == 'Windows':

@@ -12,7 +12,7 @@ cargo run --release
 
 On Windows, launch `target/release/aservice.exe`. The executable uses the Windows GUI subsystem, so the supervisor, discovery helpers, and recovery launches do not flash a console. On Linux, install your distribution's X11/Wayland/OpenGL development dependencies before building (Ubuntu: `libx11-dev libxkbcommon-dev libwayland-dev libgl1-mesa-dev`). On macOS, build natively with the Xcode command-line tools installed.
 
-For a portable release archive or macOS app bundle (packaging does not sign or notarize builds):
+The window, Windows executable, and platform release packages use the AService icon in `assets/`. Regenerate its raster formats with `python scripts/render_icon.py` (requires Pillow). For a portable release archive or macOS app bundle (packaging does not sign or notarize builds):
 
 ```sh
 python scripts/package.py

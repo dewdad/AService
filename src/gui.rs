@@ -121,11 +121,15 @@ pub fn run(store: Store) -> Result<()> {
     let gui_lock = store
         .lock("gui.lock", true)
         .map_err(|_| anyhow::anyhow!("AService is already open for this profile"))?;
+    let mut viewport = egui::ViewportBuilder::default()
+        .with_inner_size([1400.0, 900.0])
+        .with_min_inner_size([1050.0, 680.0])
+        .with_title("AService — Background applications");
+    if let Ok(icon) = eframe::icon_data::from_png_bytes(include_bytes!("../assets/aservice.png")) {
+        viewport = viewport.with_icon(std::sync::Arc::new(icon));
+    }
     let options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1400.0, 900.0])
-            .with_min_inner_size([1050.0, 680.0])
-            .with_title("AService — Background applications"),
+        viewport,
         ..Default::default()
     };
     eframe::run_native(
